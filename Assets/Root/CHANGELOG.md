@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/worldreaver/Spine/compare/1.0.1...1.1.0) (2020-04-08)
+
+
+### Features
+
+* update readme ([2565a1b](https://github.com/worldreaver/Spine/commit/2565a1bc7dd65089aa589eeda73ecc5d91153a3c))
+
 ## [1.0.1](https://github.com/worldreaver/Spine/compare/1.0.0...1.0.1) (2020-03-27)
 
 
