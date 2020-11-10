@@ -68,6 +68,9 @@ namespace Spine.Unity {
 			[Header("Vertex Data")]
 			public bool pmaVertexColors;
 			public bool tintBlack;
+			[Tooltip("Enable when using Additive blend mode at SkeletonGraphic under a CanvasGroup. " +
+				"When enabled, Additive alpha value is stored at uv2.g instead of color.a to capture CanvasGroup modifying color.a.")]
+			public bool canvasGroupTintBlack;
 			public bool calculateTangents;
 			public bool addNormals;
 			public bool immutableTriangles;
@@ -225,6 +228,35 @@ namespace Spine.Unity {
 			else {
 				workingSubmeshInstructions.Resize(0);
 			}
+		}
+
+		public static bool RequiresMultipleSubmeshesByDrawOrder (Skeleton skeleton) {
+
+		#if SPINE_TK2D
+			return false;
+		#endif
+			ExposedList<Slot> drawOrder = skeleton.drawOrder;
+			int drawOrderCount = drawOrder.Count;
+			var drawOrderItems = drawOrder.Items;
+
+			Material lastRendererMaterial = null;
+			for (int i = 0; i < drawOrderCount; i++) {
+				Slot slot = drawOrderItems[i];
+				if (!slot.bone.active) continue;
+				Attachment attachment = slot.attachment;
+				var rendererAttachment = attachment as IHasRendererObject;
+				if (rendererAttachment != null) {
+					AtlasRegion atlasRegion = (AtlasRegion)rendererAttachment.RendererObject;
+					Material material = (Material)atlasRegion.page.rendererObject;
+					if (lastRendererMaterial != material) {
+						if (lastRendererMaterial != null)
+							return true;
+						else
+							lastRendererMaterial = material;
+					}
+				}
+			}
+			return false;
 		}
 
 		public static void GenerateSkeletonRendererInstruction (SkeletonRendererInstruction instructionOutput, Skeleton skeleton, Dictionary<Slot, Material> customSlotMaterials, List<Slot> separatorSlots, bool generateMeshOverride, bool immutableTriangles = false) {
@@ -464,6 +496,7 @@ namespace Spine.Unity {
 			#else
 			bool useClipping = settings.useClipping;
 			#endif
+			bool canvasGroupTintBlack = settings.tintBlack && settings.canvasGroupTintBlack;
 
 			if (useClipping) {
 				if (instruction.preActiveClippingSlotSource >= 0) {
@@ -474,7 +507,10 @@ namespace Spine.Unity {
 
 			for (int slotIndex = instruction.startSlot; slotIndex < instruction.endSlot; slotIndex++) {
 				var slot = drawOrderItems[slotIndex];
-				if (!slot.bone.active) continue;
+				if (!slot.bone.active) {
+					clipper.ClipEnd(slot);
+					continue;
+				}
 				var attachment = slot.attachment;
 				float z = zSpacing * slotIndex;
 
@@ -524,12 +560,18 @@ namespace Spine.Unity {
 					}
 				}
 
+				float tintBlackAlpha = 1.0f;
 				if (pmaVertexColors) {
 					color.a = (byte)(skeletonA * slot.a * c.a * 255);
 					color.r = (byte)(skeletonR * slot.r * c.r * color.a);
 					color.g = (byte)(skeletonG * slot.g * c.g * color.a);
 					color.b = (byte)(skeletonB * slot.b * c.b * color.a);
-					if (slot.data.blendMode == BlendMode.Additive) color.a = 0;
+					if (slot.data.blendMode == BlendMode.Additive) {
+						if (canvasGroupTintBlack)
+							tintBlackAlpha = 0;
+						else
+							color.a = 0;
+					}
 				} else {
 					color.a = (byte)(skeletonA * slot.a * c.a * 255);
 					color.r = (byte)(skeletonR * slot.r * c.r * 255);
@@ -558,7 +600,7 @@ namespace Spine.Unity {
 							g2 *= alpha;
 							b2 *= alpha;
 						}
-						AddAttachmentTintBlack(r2, g2, b2, attachmentVertexCount);
+						AddAttachmentTintBlack(r2, g2, b2, tintBlackAlpha, attachmentVertexCount);
 					}
 
 					//AddAttachment(workingVerts, uvs, color, attachmentTriangleIndices, attachmentVertexCount, attachmentIndexCount, ref meshBoundsMin, ref meshBoundsMax, z);
@@ -662,6 +704,7 @@ namespace Spine.Unity {
 		// Use this faster method when no clipping is involved.
 		public void BuildMeshWithArrays (SkeletonRendererInstruction instruction, bool updateTriangles) {
 			var settings = this.settings;
+			bool canvasGroupTintBlack = settings.tintBlack && settings.canvasGroupTintBlack;
 			int totalVertexCount = instruction.rawVertexCount;
 
 			// Add data to vertex buffers
@@ -726,6 +769,7 @@ namespace Spine.Unity {
 						rg.x = slot.r2; //r
 						rg.y = slot.g2; //g
 						b2.x = slot.b2; //b
+						b2.y = 1.0f;
 
 						var regionAttachment = attachment as RegionAttachment;
 						if (regionAttachment != null) {
@@ -734,6 +778,7 @@ namespace Spine.Unity {
 								rg.x *= alpha;
 								rg.y *= alpha;
 								b2.x *= alpha;
+								b2.y = slot.data.blendMode == BlendMode.Additive ? 0 : alpha;
 							}
 							uv2i[vi] = rg; uv2i[vi + 1] = rg; uv2i[vi + 2] = rg; uv2i[vi + 3] = rg;
 							uv3i[vi] = b2; uv3i[vi + 1] = b2; uv3i[vi + 2] = b2; uv3i[vi + 3] = b2;
@@ -746,6 +791,7 @@ namespace Spine.Unity {
 									rg.x *= alpha;
 									rg.y *= alpha;
 									b2.x *= alpha;
+									b2.y = slot.data.blendMode == BlendMode.Additive ? 0 : alpha;
 								}
 								int meshVertexCount = meshAttachment.worldVerticesLength;
 								for (int iii = 0; iii < meshVertexCount; iii += 2) {
@@ -782,7 +828,7 @@ namespace Spine.Unity {
 							color.r = (byte)(r * slot.r * regionAttachment.r * color.a);
 							color.g = (byte)(g * slot.g * regionAttachment.g * color.a);
 							color.b = (byte)(b * slot.b * regionAttachment.b * color.a);
-							if (slot.data.blendMode == BlendMode.Additive) color.a = 0;
+							if (slot.data.blendMode == BlendMode.Additive && !canvasGroupTintBlack) color.a = 0;
 						} else {
 							color.a = (byte)(a * slot.a * regionAttachment.a * 255);
 							color.r = (byte)(r * slot.r * regionAttachment.r * 255);
@@ -829,7 +875,7 @@ namespace Spine.Unity {
 								color.r = (byte)(r * slot.r * meshAttachment.r * color.a);
 								color.g = (byte)(g * slot.g * meshAttachment.g * color.a);
 								color.b = (byte)(b * slot.b * meshAttachment.b * color.a);
-								if (slot.data.blendMode == BlendMode.Additive) color.a = 0;
+								if (slot.data.blendMode == BlendMode.Additive && !canvasGroupTintBlack) color.a = 0;
 							} else {
 								color.a = (byte)(a * slot.a * meshAttachment.a * 255);
 								color.r = (byte)(r * slot.r * meshAttachment.r * 255);
@@ -953,9 +999,9 @@ namespace Spine.Unity {
 			meshBoundsThickness *= scale;
 		}
 
-		void AddAttachmentTintBlack (float r2, float g2, float b2, int vertexCount) {
+		void AddAttachmentTintBlack (float r2, float g2, float b2, float a, int vertexCount) {
 			var rg = new Vector2(r2, g2);
-			var bo = new Vector2(b2, 1f);
+			var bo = new Vector2(b2, a);
 
 			int ovc = vertexBuffer.Count;
 			int newVertexCount = ovc + vertexCount;

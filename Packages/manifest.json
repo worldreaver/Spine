@@ -1,11 +1,9 @@
 {
   "dependencies": {
-    "com.coffee.git-dependency-resolver": "https://github.com/mob-sakai/GitDependencyResolverForUnity.git",
-    "com.coffee.upm-git-extension": "https://github.com/mob-sakai/UpmGitExtension.git",
     "com.unity.collab-proxy": "1.2.16",
     "com.unity.ide.rider": "1.1.4",
-    "com.unity.ide.vscode": "1.1.4",
-    "com.unity.test-framework": "1.1.11",
+    "com.unity.ide.vscode": "1.2.2",
+    "com.unity.test-framework": "1.1.18",
     "com.unity.textmeshpro": "2.0.1",
     "com.unity.timeline": "1.2.13",
     "com.unity.ugui": "1.0.0",
@@ -40,15 +38,5 @@
     "com.unity.modules.vr": "1.0.0",
     "com.unity.modules.wind": "1.0.0",
     "com.unity.modules.xr": "1.0.0"
-  },
-  "lock": {
-    "com.coffee.git-dependency-resolver": {
-      "revision": "HEAD",
-      "hash": "ae314c58c394b287315372cae1195f8858715e66"
-    },
-    "com.coffee.upm-git-extension": {
-      "revision": "HEAD",
-      "hash": "aa9f6ea79913e7e2749edea528c42f2f700ac401"
-    }
   }
 }
