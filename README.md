@@ -16,4 +16,4 @@ You can add https://github.com/worldreaver/Spine.git?path=Assets/Root to Package
 
 or add "com.worldreaver.spine": "https://github.com/worldreaver/Spine.git?path=Assets/Root" to Packages/manifest.json.
 
-If you want to set a target version, spine is using *.*.* release tag so you can specify a version like #3.8.0.20201028. For example https://github.com/worldreaver/Spine.git?path=Assets/Root#3.8.20201028.
+If you want to set a target version, spine is using *.*.* release tag so you can specify a version like #3.8.0.201028. For example https://github.com/worldreaver/Spine.git?path=Assets/Root#3.8.201028.
