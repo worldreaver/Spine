@@ -12,8 +12,8 @@
 ## Install
 
 After Unity 2019.3.4f1, Unity 2020.1a21, that support path query parameter of git package. 
-You can add https://github.com/worldreaver/Spine.git?path=Assets/root to Package Manager
+You can add https://github.com/worldreaver/Spine.git?path=Assets/Root to Package Manager
 
-or add "com.worldreaver.spine": "https://github.com/worldreaver/Spine.git?path=Assets/root" to Packages/manifest.json.
+or add "com.worldreaver.spine": "https://github.com/worldreaver/Spine.git?path=Assets/Root" to Packages/manifest.json.
 
-If you want to set a target version, spine is using *.*.* release tag so you can specify a version like #3.8.0.20201028. For example https://github.com/worldreaver/Spine.git?path=Assets/root#3.8.0.20201028.
+If you want to set a target version, spine is using *.*.* release tag so you can specify a version like #3.8.0.20201028. For example https://github.com/worldreaver/Spine.git?path=Assets/Root#3.8.20201028.
