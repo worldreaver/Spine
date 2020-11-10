@@ -41,9 +41,10 @@ namespace Spine.Unity {
 	[ExecuteInEditMode]
 	#endif
 	[AddComponentMenu("Spine/Point Follower")]
+	[HelpURL("http://esotericsoftware.com/spine-unity#PointFollower")]
 	public class PointFollower : MonoBehaviour, IHasSkeletonRenderer, IHasSkeletonComponent {
 
-		[SerializeField] public SkeletonRenderer skeletonRenderer;
+		public SkeletonRenderer skeletonRenderer;
 		public SkeletonRenderer SkeletonRenderer { get { return this.skeletonRenderer; } }
 		public ISkeletonComponent SkeletonComponent { get { return skeletonRenderer as ISkeletonComponent; } }
 
@@ -98,6 +99,11 @@ namespace Spine.Unity {
 					point = skeleton.GetAttachment(slotIndex, pointAttachmentName) as PointAttachment;
 				}
 			}
+		}
+
+		void OnDestroy () {
+			if (skeletonRenderer != null)
+				skeletonRenderer.OnRebuild -= HandleRebuildRenderer;
 		}
 
 		public void LateUpdate () {
