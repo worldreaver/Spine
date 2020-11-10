@@ -2,7 +2,7 @@
   "name": "com.worldreaver.spine",
   "displayName": "Spine",
   "description": "Spine runtime for unity",
-  "version": "3.8.0.20201028",
+  "version": "3.8.20201028",
   "unity": "2017.0",
   "author": "yenmoc <phongsoyenmoc.diep@gmail.com> (https://github.com/phongsoyenmoc)",
   "license": "MIT",
