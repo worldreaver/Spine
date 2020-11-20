@@ -2,7 +2,7 @@
 
 ## What
 
-- spine-unity-3.8-2020-10-28
+- spine-unity-3.8-2020-11-13
 
 ## Requirements
 [![Unity 2019.2+](https://img.shields.io/badge/unity-2019.2+-brightgreen.svg?style=flat&logo=unity&cacheSeconds=2592000)](https://unity3d.com/get-unity/download/archive)
@@ -16,4 +16,4 @@ You can add https://github.com/worldreaver/Spine.git?path=Assets/Root to Package
 
 or add "com.worldreaver.spine": "https://github.com/worldreaver/Spine.git?path=Assets/Root" to Packages/manifest.json.
 
-If you want to set a target version, spine is using *.*.* release tag so you can specify a version like #3.8.0.201028. For example https://github.com/worldreaver/Spine.git?path=Assets/Root#3.8.201028.
+If you want to set a target version, spine is using *.*.* release tag so you can specify a version like #3.8.0.201028. For example https://github.com/worldreaver/Spine.git?path=Assets/Root#3.8.201113
