@@ -2,7 +2,7 @@
 
 ## What
 
-- spine-unity-3.8-2020-12-02
+- spine-unity-3.8-2020-12-09
 
 ## Requirements
 [![Unity 2019.2+](https://img.shields.io/badge/unity-2019.2+-brightgreen.svg?style=flat&logo=unity&cacheSeconds=2592000)](https://unity3d.com/get-unity/download/archive)
